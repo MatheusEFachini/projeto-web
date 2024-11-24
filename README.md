@@ -4,3 +4,6 @@
     - React com Typescript
     - NPM e Vite para controle de depêndencias
     - Componentes disponiveis na biblioteca do shadcn(https://ui.shadcn.com/docs)
+# Back-End
+    - Java 17
+    - SpringBoot - WEB
