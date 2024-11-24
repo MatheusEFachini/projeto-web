@@ -25,7 +25,7 @@ public class Desenvolvedor {
 
     @ManyToOne
     @JoinColumn(name = "nivel_id", referencedColumnName = "id")
-    private Nivel nivel;
+    private Nivel nivel_id;
 
     @Size(min=2, max=250)
     private String nome;
@@ -36,8 +36,7 @@ public class Desenvolvedor {
 
     @NotNull
     @Past
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
+    private LocalDate data_nascimento;
 
     private String hobby;
 

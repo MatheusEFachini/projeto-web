@@ -2,6 +2,7 @@ package com.projeto.dev_project.controller;
 
 import com.projeto.dev_project.entity.Desenvolvedor;
 import com.projeto.dev_project.repository.DesenvolvedorRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@CrossOrigin("http://localhost:5173")
 @RequestMapping("/api/desenvolvedores")
 public class DesenvolvedorController {
 

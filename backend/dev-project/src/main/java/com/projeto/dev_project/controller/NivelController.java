@@ -1,9 +1,12 @@
 package com.projeto.dev_project.controller;
 
 import com.projeto.dev_project.entity.Nivel;
+import com.projeto.dev_project.exceptions.ApplicationGlobalException;
+import com.projeto.dev_project.exceptions.CustomException;
 import com.projeto.dev_project.repository.NivelRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@CrossOrigin("http://localhost:5173")
 @RequestMapping("/api/niveis")
 public class NivelController {
 
@@ -54,11 +58,13 @@ public class NivelController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable(value = "id") Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable(value = "id") Integer id) {
         try{
             nivelRepository.deleteById(id);
             return new ResponseEntity<>(String.format("Nivel %d excluído", id), HttpStatus.NO_CONTENT);
-        }catch (Exception e){
+        }catch (DataIntegrityViolationException e){
+            throw new ApplicationGlobalException(new CustomException(400, e.getMessage(),"Existe uma entidade vinculada á essa"));
+        } catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
