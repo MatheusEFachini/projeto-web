@@ -36,7 +36,7 @@ const NivelListPage = () => {
       if(e.status !== 404)
         alert({
           title:"Erro ao buscar os Níveis",
-          body:`${e.status} - ${e.message}`,
+          body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
         })
   })
   }
@@ -55,8 +55,8 @@ const NivelListPage = () => {
           getNiveis();
         }).catch(e => {
           alert({
-            title:"Erro ao remover os Níveis",
-            body:e.message,
+            title:"Erro ao remover o Nível",
+            body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
           })
         })
       }

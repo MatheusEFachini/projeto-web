@@ -3,10 +3,10 @@ import { Nivel } from "./Nivel.d";
 
 export type Desenvolvedor = {
     id?: number;
-    nivel?: Nivel;
+    nivel_id?: Nivel;
     nome?: string;
     sexo: Sexo;
-    dataNascimento: Date;
+    data_nascimento: Date;
     idade?:number;
     hobby?: string;
   };

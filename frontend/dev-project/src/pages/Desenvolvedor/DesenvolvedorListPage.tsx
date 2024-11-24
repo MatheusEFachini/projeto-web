@@ -8,10 +8,10 @@ import {
 } from "../../components/ui/table";
 
 
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { useAlert, useConfirm } from "@/components/ui/alert-dialog-provider";
 import { getSexoSpec, Sexo } from "@/enum/Sexo.d";
 import { EllipsisVertical, PlusCircle, UserMinus, UserPen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   DropdownMenu,
@@ -23,62 +23,66 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { Desenvolvedor } from "../../types/Desenvolvedor.d";
 import DesenvolvedorFormDialog from "./DesenvolvedorFormDialog";
+import * as DesenvolvedorService from "../../services/DesenvolvedorService";
 import { useToast } from "@/hooks/use-toast";
 
 const DesenvolvedorListPage = () => {
   const [open, setOpen] = useState(false);
   const [desenvolvedorSelecionado, setDesenvolvedorSelecionado] =
     useState<Desenvolvedor>({})
+const [desenvolvedores, setDesenvolvedores] = useState<Desenvolvedor[]>([])
+
   const confirm = useConfirm();
+  const alert = useAlert();
   const {toast} = useToast();
 
-  const listDesenvolvedor: Array<Desenvolvedor> = [
-    {
-      id: 1,
-      nivel: { id: 1, nivel: "Junior" },
-      nome: "Dev - 1",
-      sexo: Sexo.MASCULINO,
-      dataNascimento: new Date(1998, 4, 31),
-      idade: 26,
-      hobby: "Violão",
-    },
-    {
-      id: 2,
-      nivel: { id: 2, nivel: "Pleno" },
-      nome: "Dev - 2",
-      sexo: Sexo.FEMININO,
-      dataNascimento: new Date(2001, 0, 12),
-      idade: 23,
-      hobby: "Games",
-    },
-    {
-      id: 2,
-      nivel: { id: 3, nivel: "Senior" },
-      nome: "Dev - 3",
-      sexo: Sexo.NAO_IDENTIFICADO,
-      dataNascimento: new Date(1984, 4, 7),
-      idade: 40,
-      hobby: "Games",
-    },
-  ];
+  useEffect(() => {
+    getDesenvolvedores();
+  },[]);
+
+  const getDesenvolvedores = () => {
+    DesenvolvedorService.fetchAll()
+    .then(res => {
+      setDesenvolvedores(res?.data);
+    }).catch(e => {
+      if(e.status !== 404)
+        alert({
+          title:"Erro ao buscar os Desenvolvedores",
+          body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
+        })
+  })
+  }
 
   const onRemove = async (dev: Desenvolvedor) => {
-    console.log("Remover dev => " + dev.nome);
     await confirm({
       title:`Deseja excluir o desenvolvedor ${dev.nome}?`,
       body:"Essa ação não pode ser desfeita",
       actionButton:"Sim",
       cancelButton:"Não"
     }).then(res => {
-      if(res)
-        toast({title:"Sucesso", variant:"default", description:`Desenvolvedor ${dev.nome} foi excluído`})
+      if(res){
+        DesenvolvedorService.remove(dev)
+        .then(() => {
+          toast({title:"Sucesso", variant:"default", description:`Desenvolvedor ${dev.nome} foi excluído`})
+          getDesenvolvedores();
+        }).catch(e => {
+          alert({
+            title:"Erro ao remover os Níveis",
+            body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
+          })
+        })
+      }
     })
   }
 
   function callFormDialog(dev?: Desenvolvedor) {
-    console.log("Editar dev => " + dev?.nome);
     setDesenvolvedorSelecionado(dev ?? {});
     setOpen(true);
+  }
+
+  function updateListAfterSave(dialogOpen: boolean) {
+    getDesenvolvedores();
+    setOpen(dialogOpen);
   }
 
   return (
@@ -89,7 +93,7 @@ const DesenvolvedorListPage = () => {
         <DesenvolvedorFormDialog
           dev={desenvolvedorSelecionado}
           open={open}
-          setOpen={setOpen}
+          setOpen={updateListAfterSave}
         />
 
         <Table>
@@ -102,12 +106,12 @@ const DesenvolvedorListPage = () => {
             <TableHead>Ações</TableHead>
           </TableHeader>
           <TableBody>
-            {listDesenvolvedor.map((dev) => (
+            {desenvolvedores.map((dev) => (
               <TableRow key={dev.id}>
                 <TableCell>{dev.nome}</TableCell>
-                <TableCell>{dev.nivel?.nivel}</TableCell>
+                <TableCell>{dev.nivel_id?.nivel ?? "Nenhum"}</TableCell>
                 <TableCell>{getSexoSpec(dev.sexo).descricao}</TableCell>
-                <TableCell>{`${dev.dataNascimento.toLocaleDateString()} (${
+                <TableCell>{`${dev.data_nascimento} (${
                   dev.idade
                 } Anos)`}</TableCell>
                 <TableCell>{dev.hobby}</TableCell>

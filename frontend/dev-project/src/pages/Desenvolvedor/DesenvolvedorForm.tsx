@@ -32,29 +32,40 @@ import { Nivel } from "@/types/Nivel.d";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import * as NivelService from "../../services/NivelService"
+import { useAlert } from "@/components/ui/alert-dialog-provider";
 
 type Props = {
   dev?: Desenvolvedor;
-  onSave: () => void;
+  onSave: (value:Desenvolvedor) => void;
 };
 
 const DesenvolvedorForm: React.FC<Props> = (props) => {
-  const listNivel: Array<Nivel> = [
-    {
-      id: 1,
-      nivel: "Junior",
-    },
-    {
-      id: 2,
-      nivel: "Pleno",
-    },
-    {
-      id: 3,
-      nivel: "Senior",
-    },
-  ];
+
+  const alert = useAlert();
+  const [niveis, setNiveis] = useState<Nivel[]>([])
+
+  function getYesterday(){
+    const date = new Date();
+    date.setDate(date.getDate() - 1)
+    return date;
+  }
+  
+  useEffect(() => {
+    NivelService.fetchAll()
+    .then(res => {
+      setNiveis(res?.data);
+    }).catch(e => {
+      if(e.status !== 404)
+        alert({
+          title:"Erro ao buscar os Níveis",
+          body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
+        })
+  });
+  },[]);
 
   const validationSchema = z.object({
     id: z.any(),
@@ -70,18 +81,22 @@ const DesenvolvedorForm: React.FC<Props> = (props) => {
     defaultValues: {
       id: props.dev?.id ?? undefined,
       nome: props.dev?.nome ?? "",
-      nivel_id: props.dev?.nivel?.id ?? undefined,
+      nivel_id: props.dev?.nivel_id?.id ?? undefined,
       sexo: props.dev?.sexo ?? Sexo.NAO_IDENTIFICADO,
-      data_nascimento: props.dev?.dataNascimento
-        ? format(props.dev?.dataNascimento, "yyyy-MM-dd")
-        : format(new Date(), "yyyy-MM-dd"),
+      data_nascimento: props.dev?.data_nascimento
+        ? format(props.dev?.data_nascimento, "yyyy-MM-dd")
+        : format(getYesterday(), "yyyy-MM-dd"),
       hobby: props.dev?.hobby ?? "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof validationSchema>) {
-    console.log(JSON.stringify(values) + " - SALVO");
-    props.onSave();
+    const dev:Desenvolvedor = {
+      ...values,
+      nivel_id: niveis.find((nivel) => nivel.id === values.nivel_id),
+      data_nascimento: new Date(values.data_nascimento),
+    }
+    props.onSave(dev);
   }
 
   return (
@@ -123,9 +138,9 @@ const DesenvolvedorForm: React.FC<Props> = (props) => {
                         )}
                       >
                         {field.value
-                          ? listNivel.find((nivel) => nivel.id === field.value)
+                          ? niveis.find((nivel) => nivel.id === field.value)
                               ?.nivel
-                          : "Selecionar um Nivel(Opcional)"}
+                          : "Selecionar um Nível(Opcional)"}
                         <ChevronsUpDown className="opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -137,10 +152,25 @@ const DesenvolvedorForm: React.FC<Props> = (props) => {
                         />
                         <CommandList>
                           <CommandEmpty>
-                            NNenhum nível selecionado.
+                            Nenhum nível selecionado.
                           </CommandEmpty>
                           <CommandGroup>
-                            {listNivel.map((nivel) => (
+                            <CommandItem 
+                            value={undefined} 
+                            key={undefined}
+                            onSelect={() => form.setValue("nivel_id", undefined)}
+                            >
+                              Nenhum
+                              <Check
+                                  className={cn(
+                                    "ml-auto",
+                                    undefined === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                            </CommandItem>
+                            {niveis.map((nivel) => (
                               <CommandItem
                                 value={nivel.nivel}
                                 key={nivel.id}
@@ -223,7 +253,7 @@ const DesenvolvedorForm: React.FC<Props> = (props) => {
                   <Input
                     className="grid items-center text-left gap-2"
                     type="date"
-                    max={format(new Date(), "yyyy-MM-dd")}
+                    max={format(getYesterday(), "yyyy-MM-dd")}
                     {...field}
                   />
                 </FormControl>

@@ -11,6 +11,7 @@ import { Nivel } from "@/types/Nivel.d";
 import NivelForm from "./NivelForm";
 import * as NivelService from "../../services/NivelService";
 import { useToast } from "@/hooks/use-toast";
+import { useAlert } from "@/components/ui/alert-dialog-provider";
 
 type Props = {
   nivel?: Nivel;
@@ -21,6 +22,7 @@ type Props = {
 const NivelFormDialog: React.FC<Props> = (props) => {
 
   const {toast} = useToast();
+  const alert = useAlert();
 
   const saveNivel = (nivel:Nivel) => {
     NivelService.save(nivel)
@@ -30,7 +32,7 @@ const NivelFormDialog: React.FC<Props> = (props) => {
     }).catch(e => {
         alert({
           title:"Erro ao salvar o Nivel",
-          body:`${e.status} - ${e.message}`,
+          body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
         })
   })
   }
@@ -41,7 +43,7 @@ const NivelFormDialog: React.FC<Props> = (props) => {
       <DialogHeader>
         <DialogTitle>Cadastro de Nível</DialogTitle>
         <DialogDescription>
-          Preenchas os dados e aperte em "Salvar"
+          Preencha os dados e aperte em "Salvar"
         </DialogDescription>
       </DialogHeader>
         <NivelForm nivel={props.nivel} onSave={saveNivel}/>

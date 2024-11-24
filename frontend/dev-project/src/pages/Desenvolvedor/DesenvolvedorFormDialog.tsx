@@ -7,8 +7,11 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { Desenvolvedor } from "@/types/Desenvolvedor.d";
+import * as DesenvolvedorService from "../../services/DesenvolvedorService";
 import DesenvolvedorForm from "./DesenvolvedorForm";
+import { useAlert } from "@/components/ui/alert-dialog-provider";
 
 
 type Props = {
@@ -18,8 +21,21 @@ type Props = {
 };
 
 const DesenvolvedorFormDialog: React.FC<Props> = (props) => {
-  const handleCloseDialog = () => {
-    props.setOpen(false);
+
+  const alert = useAlert();
+  const {toast} = useToast();
+
+  const saveDesenvolvedor = (dev:Desenvolvedor) => {
+    DesenvolvedorService.save(dev)
+    .then(() => {
+      toast({title:"Sucesso", variant:"default", description:`Desenvolvedor ${dev.nome} foi salvo`})
+      props.setOpen(false);
+    }).catch(e => {
+        alert({
+          title:"Erro ao salvar o Desenvolvedor",
+          body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
+        })
+  })
   }
 
   return (
@@ -28,10 +44,10 @@ const DesenvolvedorFormDialog: React.FC<Props> = (props) => {
       <DialogHeader>
         <DialogTitle>Cadastro de Desenvolvedor</DialogTitle>
         <DialogDescription>
-          Preenchas os dados e aperte em "Salvar"
+          Preencha os dados e aperte em "Salvar"
         </DialogDescription>
       </DialogHeader>
-        <DesenvolvedorForm dev={props.dev} onSave={handleCloseDialog}/>
+        <DesenvolvedorForm dev={props.dev} onSave={saveDesenvolvedor}/>
     </DialogContent>
   </Dialog>
   );
