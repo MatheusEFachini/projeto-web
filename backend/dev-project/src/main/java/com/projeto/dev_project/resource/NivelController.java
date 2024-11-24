@@ -3,10 +3,14 @@ package com.projeto.dev_project.resource;
 import com.projeto.dev_project.entity.Nivel;
 import com.projeto.dev_project.repository.NivelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api/niveis")
 public class NivelController {
@@ -15,23 +19,46 @@ public class NivelController {
     NivelRepository nivelRepository;
 
     @GetMapping
-    public List<Nivel> getNiveis() {
-        return nivelRepository.findAll();
+    public ResponseEntity<List<Nivel>> getNiveis() {
+        try{
+            List<Nivel> niveis = nivelRepository.findAll();
+            if(Objects.isNull(niveis) && niveis.size() < 1){
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(niveis, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping
-    public Nivel saveNivel(@RequestBody Nivel nivel) {
-        return nivelRepository.save(nivel);
+    public ResponseEntity<Nivel> saveNivel(@RequestBody Nivel nivel) {
+        try{
+            Nivel nivelSaved = nivelRepository.save(nivel);
+            return new ResponseEntity<>(nivelSaved, HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
-    public Nivel editNivel(@RequestBody Nivel nivel) {
-        return nivelRepository.save(nivel);
+    public ResponseEntity<Nivel> editNivel(@RequestBody Nivel nivel) {
+        try{
+            Nivel nivelSaved = nivelRepository.save(nivel);
+            return new ResponseEntity<>(nivelSaved, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable(value = "id") Integer id){
-        nivelRepository.deleteById(id);
+    public ResponseEntity<String> deleteById(@PathVariable(value = "id") Integer id){
+        try{
+            nivelRepository.deleteById(id);
+            return new ResponseEntity<>(String.format("Nivel %d excluído", id), HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
