@@ -23,6 +23,7 @@ public class Desenvolvedor {
     private Integer id;
 
     @OneToMany
+    @Column(name = "nivel_id")
     private Nivel nivel;
 
     @Size(min=2, max=250)

@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="02-create-table-desenvolvedor" author="matheus.fachini" >
+        <preConditions>
+            <not>
+                <tableExists tableName="desenvolvedor" />
+            </not>
+        </preConditions>
+        <createTable tableName="desenvolvedor">
+            <column name="id" type="NUMERIC">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="desenvolvedorPK"/>
+            </column>
+            <column name="nivel_id" type="NUMERIC">
+                <constraints foreignKeyName="fk_pessoa_nivel_id" references="nivel(id)"/>
+            </column>
+            <column name="nome" type="VARCHAR(250)" />
+            <column name="sexo" type="CHAR" />
+            <column name="data_nascimento" type="DATE" />
+            <column name="hobby" type="VARCHAR(250)" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,7 +1,6 @@
-package com.projeto.dev_project.resource;
+package com.projeto.dev_project.controller;
 
 import com.projeto.dev_project.entity.Desenvolvedor;
-import com.projeto.dev_project.entity.Nivel;
 import com.projeto.dev_project.repository.DesenvolvedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
