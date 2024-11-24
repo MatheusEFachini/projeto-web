@@ -8,10 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/niveis")
 public class NivelController {
 
@@ -22,12 +24,12 @@ public class NivelController {
     public ResponseEntity<List<Nivel>> getNiveis() {
         try{
             List<Nivel> niveis = nivelRepository.findAll();
-            if(Objects.isNull(niveis) || niveis.size() < 1){
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            if(Objects.isNull(niveis) || niveis.isEmpty()){
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(niveis, HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

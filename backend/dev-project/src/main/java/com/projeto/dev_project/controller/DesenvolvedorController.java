@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/desenvolvedores")
 public class DesenvolvedorController {
 
@@ -21,7 +22,7 @@ public class DesenvolvedorController {
     public ResponseEntity<List<Desenvolvedor>> getDesenvolvedores() {
         try{
             List<Desenvolvedor> desenvolvedores = desenvolvedorRepository.findAll();
-            if(Objects.isNull(desenvolvedores) || desenvolvedores.size() < 1){
+            if(Objects.isNull(desenvolvedores) || desenvolvedores.isEmpty()){
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(desenvolvedores, HttpStatus.OK);
