@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/niveis")
 public class NivelController {
 

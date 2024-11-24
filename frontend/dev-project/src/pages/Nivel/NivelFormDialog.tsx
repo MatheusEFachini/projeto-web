@@ -8,8 +8,9 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { Nivel } from "@/types/Nivel.d";
-
 import NivelForm from "./NivelForm";
+import * as NivelService from "../../services/NivelService";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   nivel?: Nivel;
@@ -18,8 +19,20 @@ type Props = {
 };
 
 const NivelFormDialog: React.FC<Props> = (props) => {
-  const handleCloseDialog = () => {
-    props.setOpen(false);
+
+  const {toast} = useToast();
+
+  const saveNivel = (nivel:Nivel) => {
+    NivelService.save(nivel)
+    .then(() => {
+      toast({title:"Sucesso", variant:"default", description:`Nível ${nivel.nivel} foi salvo`})
+      props.setOpen(false);
+    }).catch(e => {
+        alert({
+          title:"Erro ao salvar o Nivel",
+          body:`${e.status} - ${e.message}`,
+        })
+  })
   }
 
   return (
@@ -31,7 +44,7 @@ const NivelFormDialog: React.FC<Props> = (props) => {
           Preenchas os dados e aperte em "Salvar"
         </DialogDescription>
       </DialogHeader>
-        <NivelForm nivel={props.nivel} onSave={handleCloseDialog}/>
+        <NivelForm nivel={props.nivel} onSave={saveNivel}/>
     </DialogContent>
   </Dialog>
   );

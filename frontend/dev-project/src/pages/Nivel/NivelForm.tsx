@@ -17,7 +17,7 @@ import { z } from "zod";
 
 type Props = {
   nivel?: Nivel;
-  onSave: () => void;
+  onSave: (value:Nivel) => void;
 };
 
 const NivelForm: React.FC<Props> = (props) => {
@@ -35,8 +35,7 @@ const NivelForm: React.FC<Props> = (props) => {
   });
 
   async function onSubmit(values: z.infer<typeof validationSchema>) {
-    console.log(JSON.stringify(values) + " - SALVO");
-    props.onSave();
+    props.onSave(values);
   }
 
   return (

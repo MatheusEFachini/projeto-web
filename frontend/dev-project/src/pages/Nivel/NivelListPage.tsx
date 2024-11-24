@@ -11,41 +11,55 @@ import { PlusCircle, UserMinus, UserPen } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Nivel } from "../../types/Nivel.d";
 import NivelFormDialog from "./NivelFormDialog";
-import { useState } from "react";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { useEffect, useState } from "react";
+import { useAlert, useConfirm } from "@/components/ui/alert-dialog-provider";
 import { useToast } from "@/hooks/use-toast";
+import * as NivelService from "../../services/NivelService";
 
 const NivelListPage = () => {
   const [open, setOpen] = useState(false);
   const [nivelSelecionado, setNivelSelecionado] = useState<Nivel>({});
+  const [niveis, setNiveis] = useState<Nivel[]>([]);
   const confirm = useConfirm();
+  const alert = useAlert();
   const {toast} = useToast();
+  
+  useEffect(() => {
+    getNiveis();
+  },[]);
 
-  const listNivel: Array<Nivel> = [
-    {
-      id: 1,
-      nivel: "Junior",
-    },
-    {
-      id: 2,
-      nivel: "Pleno",
-    },
-    {
-      id: 3,
-      nivel: "Senior",
-    },
-  ];
+  const getNiveis = () => {
+    NivelService.fetchAll()
+    .then(res => {
+      setNiveis(res?.data);
+    }).catch(e => {
+      if(e.status !== 404)
+        alert({
+          title:"Erro ao buscar os Níveis",
+          body:`${e.status} - ${e.message}`,
+        })
+  })
+  }
 
   const onRemove = async (nivel: Nivel) => {
-    console.log("Remover nivel => " + nivel.nivel);
     await confirm({
       title:`Deseja excluir o nível ${nivel.nivel}?`,
       body:"Essa ação não pode ser desfeita",
       actionButton:"Sim",
       cancelButton:"Não"
     }).then(res => {
-      if(res)
-        toast({title:"Sucesso", variant:"default", description:`Nível ${nivel.nivel} foi excluído`})
+      if(res) {
+        NivelService.remove(nivel)
+        .then(() => {
+          toast({title:"Sucesso", variant:"default", description:`Nível ${nivel.nivel} foi excluído`})
+          getNiveis();
+        }).catch(e => {
+          alert({
+            title:"Erro ao remover os Níveis",
+            body:e.message,
+          })
+        })
+      }
     })
   };
 
@@ -54,24 +68,29 @@ const NivelListPage = () => {
     setOpen(true);
   }
 
+  function updateListAfterSave(dialogOpen: boolean) {
+    getNiveis();
+    setOpen(dialogOpen);
+  }
+
   return (
     <div className="p-6 w-full mx-auto">
       <div className="border rounded-lg p-2">
-        <h1 className="text-3xl font-bold">Niveis</h1>
+        <h1 className="text-3xl font-bold">Níveis</h1>
 
         <NivelFormDialog
           nivel={nivelSelecionado}
           open={open}
-          setOpen={setOpen}
+          setOpen={updateListAfterSave}
         />
 
         <Table>
           <TableHeader>
-            <TableHead className="flex flex-row basis-3/4">Nível</TableHead>
+            <TableHead className="flex flex-row basis-3/4">Descrição</TableHead>
             <TableHead className="w-[150px]">Ações</TableHead>
           </TableHeader>
           <TableBody>
-            {listNivel.map((nivel) => (
+            {niveis.map((nivel) => (
               <TableRow key={nivel.id}>
                 <TableCell>{nivel.nivel}</TableCell>
                 <TableCell>
