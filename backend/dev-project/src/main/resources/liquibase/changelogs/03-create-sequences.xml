@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="03-create-sequences-nivel" author="matheus.fachini">
+        <preConditions onFail="MARK_RAN" onFailMessage="Sequência de nivel já existe.">
+            <not>
+                <sequenceExists sequenceName="SEQ_NIVEL" />
+            </not>
+        </preConditions>
+        <createSequence sequenceName="SEQ_NIVEL" startValue="1" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="04-create-sequences-desenvolvedor" author="matheus.fachini">
+        <preConditions onFail="MARK_RAN" onFailMessage="Sequência de desenvolvedor já existe.">
+            <not>
+                <sequenceExists sequenceName="SEQ_DESENVOLVEDOR" />
+            </not>
+        </preConditions>
+        <createSequence sequenceName="SEQ_DESENVOLVEDOR" startValue="1" incrementBy="1" />
+    </changeSet>
+
+</databaseChangeLog>
+

@@ -1,4 +1,4 @@
-package com.example.dev_project;
+package com.projeto.dev_project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,5 +9,4 @@ public class DevProjectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DevProjectApplication.class, args);
 	}
-
 }

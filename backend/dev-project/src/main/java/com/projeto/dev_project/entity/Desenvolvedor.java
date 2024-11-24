@@ -19,11 +19,12 @@ import java.time.LocalDate;
 public class Desenvolvedor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "desenvolvedorId")
+    @SequenceGenerator(name = "desenvolvedorId", sequenceName = "SEQ_DESENVOLVEDOR", allocationSize = 1)
     private Integer id;
 
-    @OneToMany
-    @Column(name = "nivel_id")
+    @ManyToOne
+    @JoinColumn(name = "nivel_id", referencedColumnName = "id")
     private Nivel nivel;
 
     @Size(min=2, max=250)

@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class Nivel{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "nivelId")
+    @SequenceGenerator(name = "nivelId", sequenceName = "SEQ_NIVEL", allocationSize = 1)
     private Integer id;
 
     @NotNull

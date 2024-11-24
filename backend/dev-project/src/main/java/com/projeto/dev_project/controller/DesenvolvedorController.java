@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api/desenvolvedores")
 public class DesenvolvedorController {
@@ -22,7 +21,7 @@ public class DesenvolvedorController {
     public ResponseEntity<List<Desenvolvedor>> getDesenvolvedores() {
         try{
             List<Desenvolvedor> desenvolvedores = desenvolvedorRepository.findAll();
-            if(Objects.isNull(desenvolvedores) && desenvolvedores.size() < 1){
+            if(Objects.isNull(desenvolvedores) || desenvolvedores.size() < 1){
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(desenvolvedores, HttpStatus.OK);
@@ -42,8 +41,9 @@ public class DesenvolvedorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Desenvolvedor> editDev(@RequestBody Desenvolvedor dev) {
+    public ResponseEntity<Desenvolvedor> editDev(@PathVariable(value = "id") Integer id,@RequestBody Desenvolvedor dev) {
         try{
+            dev.setId(id);
             Desenvolvedor devSaved = desenvolvedorRepository.save(dev);
             return new ResponseEntity<>(devSaved, HttpStatus.OK);
         }catch (Exception e){
