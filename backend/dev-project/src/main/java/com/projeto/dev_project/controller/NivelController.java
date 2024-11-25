@@ -1,5 +1,6 @@
 package com.projeto.dev_project.controller;
 
+import com.projeto.dev_project.DTO.NivelDTO;
 import com.projeto.dev_project.entity.Nivel;
 import com.projeto.dev_project.exceptions.ApplicationGlobalException;
 import com.projeto.dev_project.exceptions.CustomException;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,18 +21,18 @@ import java.util.Objects;
 public class NivelController {
 
     @Autowired
-    NivelRepository nivelRepository;
+    private NivelRepository nivelRepository;
 
     @GetMapping
-    public ResponseEntity<List<Nivel>> getNiveis() {
+    public ResponseEntity<List<NivelDTO>> getNiveis() {
         try{
-            List<Nivel> niveis = nivelRepository.findAll();
+            List<NivelDTO> niveis = nivelRepository.findNiveisWithQuantidadeDesenvolvedores();
             if(Objects.isNull(niveis) || niveis.isEmpty()){
-                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+                throw new ApplicationGlobalException(new CustomException(HttpStatus.NOT_FOUND.value(), "Tabela vazia","Nenhuma entidade encontrada"));
             }
             return new ResponseEntity<>(niveis, HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApplicationGlobalException(new CustomException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(),"Erro ao buscar entidades"));
         }
     }
 
@@ -42,7 +42,7 @@ public class NivelController {
             Nivel nivelSaved = nivelRepository.save(nivel);
             return new ResponseEntity<>(nivelSaved, HttpStatus.CREATED);
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApplicationGlobalException(new CustomException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(),"Erro ao salvar entidade"));
         }
     }
 
@@ -53,7 +53,7 @@ public class NivelController {
             Nivel nivelSaved = nivelRepository.save(nivel);
             return new ResponseEntity<>(nivelSaved, HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApplicationGlobalException(new CustomException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(),"Erro ao salvar entidade"));
         }
     }
 
@@ -63,9 +63,9 @@ public class NivelController {
             nivelRepository.deleteById(id);
             return new ResponseEntity<>(String.format("Nivel %d excluído", id), HttpStatus.NO_CONTENT);
         }catch (DataIntegrityViolationException e){
-            throw new ApplicationGlobalException(new CustomException(400, e.getMessage(),"Existe uma entidade vinculada á essa"));
+            throw new ApplicationGlobalException(new CustomException(HttpStatus.BAD_REQUEST.value(), e.getMessage(),"Existe uma entidade vinculada á essa"));
         } catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApplicationGlobalException(new CustomException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(),"Erro ao excluir entidade"));
         }
     }
 
