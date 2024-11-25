@@ -2,8 +2,10 @@
  
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -20,6 +22,9 @@ import {
 import { UserMinus, UserPen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { getSexoSpec } from "@/enum/Sexo.d"
  
 interface Props<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -28,7 +33,7 @@ interface Props<TData, TValue> {
   onDelete: (value:TData) => void;
 }
  
-export function CommonTableComponent<TData, TValue>({
+export function DesenvolvedorTableComponent<TData, TValue>({
   columns,
   data,
   onEdit,
@@ -37,19 +42,36 @@ export function CommonTableComponent<TData, TValue>({
 }: Props<TData, TValue>) {
 
   const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel:getFilteredRowModel(),
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     state:{
-      sorting:sorting
+      sorting,
+      columnFilters
     }
   })
 
   return (
+    <>
+    <div className="flex items-center py-4">
+      <Label>Filtro:</Label>
+        <Input
+          placeholder="Filtrar por nome..."
+          value={(table.getColumn("nome")?.getFilterValue() as string) ?? ""}
+          onChange={(event:any) =>
+            table.getColumn("nome")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+   
     <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => 
@@ -76,7 +98,14 @@ export function CommonTableComponent<TData, TValue>({
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {
+                      cell.id.includes("sexo") ? 
+                      getSexoSpec(row.original?.sexo).descricao
+                      : cell.id.includes("data_nascimento") ? 
+                      `${row.original?.data_nascimento} (${row.original?.idade} Anos)`
+                      : cell.id.includes("nivel_id") ? row.original?.nivel_id?.nivel ?? "Nenhum"
+                      : flexRender(cell.column.columnDef.cell, cell.getContext())
+                    }
                   </TableCell>
                 ))}
                 <TableCell>
@@ -107,4 +136,5 @@ export function CommonTableComponent<TData, TValue>({
           )}
           </TableBody>
         </Table>
+        </>
   )}

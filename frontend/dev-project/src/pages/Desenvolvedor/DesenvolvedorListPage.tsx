@@ -21,10 +21,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Desenvolvedor } from "../../types/Desenvolvedor.d";
+import { columnsDesenvolvedor, Desenvolvedor } from "../../types/Desenvolvedor.d";
 import DesenvolvedorFormDialog from "./DesenvolvedorFormDialog";
 import * as DesenvolvedorService from "../../services/DesenvolvedorService";
 import { useToast } from "@/hooks/use-toast";
+import { DesenvolvedorTableComponent } from "./DesenvolvedorTableComponent";
 
 const DesenvolvedorListPage = () => {
   const [open, setOpen] = useState(false);
@@ -96,7 +97,13 @@ const [desenvolvedores, setDesenvolvedores] = useState<Desenvolvedor[]>([])
           setOpen={updateListAfterSave}
         />
 
-        <Table>
+        <DesenvolvedorTableComponent 
+        columns={columnsDesenvolvedor} 
+        data={desenvolvedores} 
+        onEdit={callFormDialog} 
+        onDelete={onRemove} />
+
+        {/* <Table>
           <TableHeader>
             <TableHead>Desenvolvedor</TableHead>
             <TableHead>Nível</TableHead>
@@ -137,7 +144,7 @@ const [desenvolvedores, setDesenvolvedores] = useState<Desenvolvedor[]>([])
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
 
         <div className="flex items-center justify-between">
           <Button onClick={() => callFormDialog()}>

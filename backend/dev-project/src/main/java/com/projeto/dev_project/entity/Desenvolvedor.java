@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -40,4 +42,11 @@ public class Desenvolvedor {
 
     private String hobby;
 
+    @Transient
+    private Integer idade;
+
+    @PostLoad
+    private void calculateIdade(){
+        this.idade = Period.between(this.data_nascimento, LocalDate.now()).getYears();
+    }
 }

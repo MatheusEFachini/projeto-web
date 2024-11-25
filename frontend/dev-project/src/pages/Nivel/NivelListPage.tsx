@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
-import { CommonTableComponent } from "../../components/ui/CommonTableComponent";
+import { NivelTableComponent } from "./NIvelTableComponent";
 import * as NivelService from "../../services/NivelService";
 import { Nivel, columnsNivel } from "../../types/Nivel.d";
 import NivelFormDialog from "./NivelFormDialog";
@@ -87,12 +87,12 @@ const NivelListPage = () => {
           setOpen={updateListAfterSave}
         />
 
-        <CommonTableComponent 
+        <NivelTableComponent 
         columns={columnsNivel} 
         data={niveis} 
         onEdit={callFormDialog} 
         onDelete={onRemove}/>
-        
+
         <div className="flex items-center justify-between">
           <Button onClick={() => callFormDialog()}>
             <PlusCircle className="w-4 h-4 mr-2" />
