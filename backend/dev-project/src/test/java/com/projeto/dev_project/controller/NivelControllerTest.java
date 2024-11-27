@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projeto.dev_project.entity.Nivel;
 import com.projeto.dev_project.repository.NivelRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class NivelControllerTest {
 
     @Autowired
@@ -39,6 +40,18 @@ class NivelControllerTest {
 
 
     @Test
+    @Sql(statements = {"DELETE FROM desenvolvedor"})
+    @Sql(statements = {"DELETE FROM nivel"})
+    @Order(1)
+    void getNiveisEmpty() throws Exception {
+        mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/niveis"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Order(2)
     void getNiveis() throws Exception {
         mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/niveis"))
@@ -70,7 +83,6 @@ class NivelControllerTest {
 
         Optional<Nivel> nivelExistente = nivelRepository.findById(1);
         assertEquals(nivelExistente.get().getNivel(),"Trainee");
-
         mockMvc
                 .perform(MockMvcRequestBuilders.put("/api/niveis/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,13 +95,20 @@ class NivelControllerTest {
 
     @Test
     void deleteNivel() throws Exception {
-
         assertTrue(nivelRepository.existsById(4));
-
         mockMvc
                 .perform(MockMvcRequestBuilders.delete("/api/niveis/4"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-
         assertFalse(nivelRepository.existsById(4));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void deleteNivelVinculado() throws Exception {
+        assertTrue(nivelRepository.existsById(1));
+        mockMvc
+                .perform(MockMvcRequestBuilders.delete("/api/niveis/1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        assertTrue(nivelRepository.existsById(1));
     }
 }

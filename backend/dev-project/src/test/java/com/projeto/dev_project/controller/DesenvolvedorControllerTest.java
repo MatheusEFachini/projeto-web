@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projeto.dev_project.entity.Desenvolvedor;
 import com.projeto.dev_project.repository.DesenvolvedorRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class DesenvolvedorControllerTest {
 
     @Autowired
@@ -39,6 +39,8 @@ class DesenvolvedorControllerTest {
     private DesenvolvedorRepository desenvolvedorRepository;
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Order(1)
     void getDesenvolvedores() throws Exception {
         mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/desenvolvedores"))
@@ -48,6 +50,8 @@ class DesenvolvedorControllerTest {
     }
 
     @Test
+    @Order(2)
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void saveDesenvolvedor() throws Exception {
         Desenvolvedor dev = new Desenvolvedor();
         dev.setNome("TESTE");
@@ -90,13 +94,13 @@ class DesenvolvedorControllerTest {
     @Test
     void deleteDev() throws Exception {
 
-        assertTrue(desenvolvedorRepository.existsById(1));
+        assertTrue(desenvolvedorRepository.existsById(2));
 
         mockMvc
-                .perform(MockMvcRequestBuilders.delete("/api/desenvolvedores/1"))
+                .perform(MockMvcRequestBuilders.delete("/api/desenvolvedores/2"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        assertFalse(desenvolvedorRepository.existsById(1));
+        assertFalse(desenvolvedorRepository.existsById(2));
     }
 
 }

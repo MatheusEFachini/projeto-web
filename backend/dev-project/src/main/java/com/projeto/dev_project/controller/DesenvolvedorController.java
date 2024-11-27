@@ -21,45 +21,29 @@ public class DesenvolvedorController {
 
     @GetMapping
     public ResponseEntity<List<Desenvolvedor>> getDesenvolvedores() {
-        try{
-            List<Desenvolvedor> desenvolvedores = desenvolvedorRepository.findAll();
-            if(Objects.isNull(desenvolvedores) || desenvolvedores.isEmpty()){
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(desenvolvedores, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        List<Desenvolvedor> desenvolvedores = desenvolvedorRepository.findAll();
+        if(desenvolvedores.isEmpty()){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(desenvolvedores, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Desenvolvedor> saveDev(@RequestBody Desenvolvedor dev) {
-        try{
-            Desenvolvedor devSaved = desenvolvedorRepository.save(dev);
-            return new ResponseEntity<>(devSaved, HttpStatus.CREATED);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Desenvolvedor devSaved = desenvolvedorRepository.save(dev);
+        return new ResponseEntity<>(devSaved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Desenvolvedor> editDev(@PathVariable(value = "id") Integer id,@RequestBody Desenvolvedor dev) {
-        try{
-            dev.setId(id);
-            Desenvolvedor devSaved = desenvolvedorRepository.save(dev);
-            return new ResponseEntity<>(devSaved, HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        dev.setId(id);
+        Desenvolvedor devSaved = desenvolvedorRepository.save(dev);
+        return new ResponseEntity<>(devSaved, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(value = "id") Integer id){
-        try{
-            desenvolvedorRepository.deleteById(id);
-            return new ResponseEntity<>(String.format("Desenvolvedor com id: %d excluído", id), HttpStatus.NO_CONTENT);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        desenvolvedorRepository.deleteById(id);
+        return new ResponseEntity<>(String.format("Desenvolvedor com id: %d excluído", id), HttpStatus.NO_CONTENT);
     }
 }
