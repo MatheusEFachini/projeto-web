@@ -12,10 +12,17 @@
     
 # Back-End
     - Java 17
-    - SpringBoot - WEB
+    - SpringBoot, JPA e Hibernate
+    - Postgresql e Liquibase para gerar o banco
+    - Testes integrados com JUnit 5
 
     1 - Acessar backend/dev-project
-    2 - Subir a aplicação com './mvnw spring-boot:run'
-    2.1 - Ou abrir a aplicação por alguma IDE e rodar "com.projeto.dev_project.DevProjectApplication.class"
+    2 - Em "application.properties" alterar os campos do banco para apontarem para seu banco local.
+        2.1 - spring.datasource.url=jdbc:postgresql://localhost:5432/{NOME_BANCO_LOCAL}
+              spring.datasource.username={USER_BANCO_LOCAL}
+              spring.datasource.password={SENHA_BANCO_LOCAL}
+        2.2 - Só é necessário a  criação de uma database local, o Liquibase irá criar todas as tabelas e sequences
+    3 - Subir a aplicação com './mvnw spring-boot:run'
+        3.1 - Ou abrir a aplicação por alguma IDE e rodar "com.projeto.dev_project.DevProjectApplication.class"
     3 - A aplicaçao irá subir no http://localhost:8080
     
