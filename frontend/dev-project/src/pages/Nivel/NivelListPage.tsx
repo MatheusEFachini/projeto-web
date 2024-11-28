@@ -27,13 +27,14 @@ const NivelListPage = () => {
         setNiveis(res?.data);
       })
       .catch((e) => {
-        if (e.status !== 404)
+        if (e.status == 404){
+          setNiveis([]);
+        }else{
           alert({
             title: "Erro ao buscar os Níveis",
-            body: `${e.response?.data?.code ?? e.status} - ${
-              e.response?.data?.cause ?? e.message
-            }`,
+            body: `${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
           });
+        }
       });
   };
 

@@ -46,11 +46,14 @@ const [desenvolvedores, setDesenvolvedores] = useState<Desenvolvedor[]>([])
     .then(res => {
       setDesenvolvedores(res?.data);
     }).catch(e => {
-      if(e.status !== 404)
+      if(e.status == 404){
+        setDesenvolvedores([])
+      }else{
         alert({
           title:"Erro ao buscar os Desenvolvedores",
           body:`${e.response?.data?.code ?? e.status} - ${e.response?.data?.cause ?? e.message}`,
         })
+      }
   })
   }
 
@@ -102,49 +105,6 @@ const [desenvolvedores, setDesenvolvedores] = useState<Desenvolvedor[]>([])
         data={desenvolvedores} 
         onEdit={callFormDialog} 
         onDelete={onRemove} />
-
-        {/* <Table>
-          <TableHeader>
-            <TableHead>Desenvolvedor</TableHead>
-            <TableHead>Nível</TableHead>
-            <TableHead>Sexo</TableHead>
-            <TableHead>Data de Nascimento</TableHead>
-            <TableHead>Hobby</TableHead>
-            <TableHead>Ações</TableHead>
-          </TableHeader>
-          <TableBody>
-            {desenvolvedores.map((dev) => (
-              <TableRow key={dev.id}>
-                <TableCell>{dev.nome}</TableCell>
-                <TableCell>{dev.nivel_id?.nivel ?? "Nenhum"}</TableCell>
-                <TableCell>{getSexoSpec(dev.sexo).descricao}</TableCell>
-                <TableCell>{`${dev.data_nascimento} (${
-                  dev.idade
-                } Anos)`}</TableCell>
-                <TableCell>{dev.hobby}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <EllipsisVertical />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => callFormDialog(dev)}>
-                        <UserPen />
-                        <span>Editar</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onRemove(dev)}>
-                        <UserMinus />
-                        <span>Remover</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table> */}
 
         <div className="flex items-center justify-between">
           <Button onClick={() => callFormDialog()}>

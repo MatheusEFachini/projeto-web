@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,7 @@ public class NivelController {
     public ResponseEntity<List<NivelDTO>> getNiveis() {
         List<NivelDTO> niveis = nivelRepository.findNiveisWithQuantidadeDesenvolvedores();
         if(niveis.isEmpty()){
-            throw new ApplicationGlobalException(new CustomException(HttpStatus.NOT_FOUND.value(), "Tabela vazia","Nenhuma entidade encontrada"));
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(niveis, HttpStatus.OK);
     }
