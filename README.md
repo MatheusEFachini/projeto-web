@@ -1,5 +1,6 @@
 # Projeto 
     Desenvolvido por Matheus Eduardo Fachini
+    rodar "docker-compose up" e acessar "http://localhost:5173"
     
 # Front-End
     - React com Typescript
